@@ -1,0 +1,107 @@
+{% extends 'common/gwadmin/base.html' %}
+{% load staticfiles %}
+{% block bread %}
+    <li class="breadcrumb-item active">试题导入</li>
+{% endblock %}
+{% block css %}
+    <!-- 时间选择 -->
+    <link href="{% static 'common/plugins/bootstrap/datetimepicker/css/bootstrap-datetimepicker.min.css' %}"
+          rel="stylesheet">
+
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-6">
+            <button type="button" class="btn btn-primary btn-sm" id="add_user">新增
+            </button>
+            <button type="button" class="btn btn-primary btn-sm">导入</button>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-default">导出
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" id="getCo">获取
+            </button>
+
+        </div>
+        <div class="col-6">
+            <div class="card-tools float-right">
+                <div class="input-group input-group-sm" style="width: 200px;">
+                    <input type="text" name="table_search" class="form-control float-right"
+                           placeholder="Search">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-default"><i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-primary card-outline">
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-4">
+                    <div id="editor">
+                        {% autoescape off %}
+                            {{ exam_list.exam_info }}
+                        {% endautoescape %}
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <div class="row">
+                <div class="col-1 offset-11 text-right">
+                    <button class="btn btn-dark btn-block" id="btn_save_exam">提交</button>
+                </div>
+
+            </div>
+            <!-- /.card -->
+            <div class="row">
+                <div class="col-12">
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        editor.create()
+
+        $('#btn_save_exam').click(function () {
+            layer.confirm('是否保存？', {
+                shadeClose: true,
+                btn: ['确认', '取消'] //按钮
+            }, function () {
+                var exam_content = editor.txt.html()
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '/gw/examimport',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {exam_content: exam_content},
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                    },
+                    success: function (msg) {
+                        console.log(msg);
+                        if (msg.code != null) {
+                            layer.msg(msg.msg);
+                        }
+                        {#setTimeout("javascript:location.reload();", 500);#}
+                    },
+                    error: function (msg) {
+                        layer.msg("出问题啦！!");
+                    }
+                })
+            });
+
+
+        });
+    </script>
+{% endblock %}

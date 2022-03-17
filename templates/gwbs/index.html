@@ -1,0 +1,268 @@
+{% extends 'common/base.html' %}
+{% load staticfiles %}
+{% block title %}答题页面{% endblock %}
+{% block css %}
+{% endblock %}
+{% block body %}
+    {% include "common/title.html" %}
+    <div class="row">
+        <div class="col-12 text-right">
+            <h3>
+                <span id="hour_show"></span>
+                <span id="minute_show">0 分</span>
+                <span id="second_show">0 秒</span>
+            </h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <div class="card-header">
+                <strong>考生信息</strong>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-8 offset-2">
+                            {{ STATIC_URL }}
+                            <img src="{% static "15986836378978.jpg" %}"
+                                 class="img-thumbnail" alt="...">
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-10 offset-1">
+                            <p><strong>考号：{{ user_info.candidate_num }}</strong></p>
+                            <p><strong>考室：{{ user_info.room_num }} 考室</strong></p>
+                            <p><strong>姓名：{{ user_info.name }}</strong></p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card-header">
+                        <strong>第 1 题 【 公文写作题 】</strong>
+                    </div>
+                    <div class="card">
+                        <div class="card-body pre-scrollable">
+                            <div style="border-bottom:1px dashed #000000;"></div>
+                            {% autoescape off %}
+                                {{ exam_info }}
+                            {% endautoescape %}
+                            <div style="border-bottom:1px dashed #000000;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <br>
+                    <div class="card">
+
+                        <div class="card-body">
+                            <h5>【 1 】上传 WORD 文件</h5>
+                            <div class="row">
+                                <div class="col-6">
+
+                                    <input type="file" id="file1" accept=".doc,.docx">
+
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn btn-outline-success" id="upload_file1">
+                                        上传
+                                    </button>
+
+                                </div>
+                                <br>
+                                <br>
+                            </div>
+                            <hr>
+                            <h5>【 2 】上传 PDF 文件</h5>
+                            <div class="row">
+                                <div class="col-6">
+
+                                    <input type="file" id="file2" accept=".pdf">
+
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn btn-outline-success" id="upload_file2">
+                                        上传
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4 offset-8 text-right">
+                    <br>
+                    <button type="button" class="btn btn-danger btn-block" id="gw_but1">【 交卷 】</button>
+                    <br>
+                    <br>
+                </div>
+
+            </div>
+            <br>
+            <br>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'common/plugins/bootstrap/bootstrap-filestyle.min.js' %}"></script>
+    <script>
+        // 交卷按钮
+        $("#gw_but1").click(function () {
+            layer.confirm('是否交卷？', {
+                shadeClose: true,
+                btn: ['确认', '取消'] //按钮
+            }, function () {
+                $.ajax(
+                    {
+                        url: "/gwbs",
+                        type: "POST",
+                        data: {name: "name",},
+                        cache: false,
+                        async: true,
+                        dataType: 'json',
+                        beforeSend: function (xhr, settings) {
+                            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            if (data.code != null) {
+                                layer.msg(data.msg);
+                            }
+                            setTimeout("javascript:location.reload();", 500);
+                        },
+                        error: function (data) {
+                            console.log(data)
+                            layer.msg("交卷失败，请重试！");
+                        }
+                    }
+                )
+            });
+
+        });
+        // 文件上传框样式
+        var file1 = $("#file1").filestyle({
+            text: "选择文件",
+            placeholder: "空",
+            'onChange': function (files) {
+                console.log(files[0].name)
+                var filename = files[0].name
+                var filetype = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+                console.log(filetype)
+                if ((filetype !== "doc") && (filetype !== "docx")) {
+                    layer.alert("请选择 WORD 文件")
+                    $("#file1").filestyle('clear');
+                }
+            }
+        });
+
+        var file2 = $("#file2").filestyle({
+            text: "选择文件",
+            placeholder: "空",
+            'onChange': function (files) {
+                console.log(files[0].name)
+                var filename = files[0].name
+                var filetype = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+                console.log(filetype)
+                if (filetype !== "pdf") {
+                    layer.alert("请选择 PDF 文件")
+                    $("#file2").filestyle('clear');
+                }
+            }
+        });
+        // 文件上传
+        $("#upload_file1").click(function () {
+            upload_file("file1");
+        })
+        $("#upload_file2").click(function () {
+            upload_file("file2");
+        })
+
+        // 倒计时
+        var intDiff = parseInt({{ count_down }});//倒计时总秒数量
+
+        timer(intDiff);
+
+        // 倒计时函数
+        function timer(intDiff) {
+            window.setInterval(function () {
+                var day = 0,
+                    hour = 0,
+                    minute = 0,
+                    second = 0;//时间默认值
+                if (intDiff > 0) {
+                    day = Math.floor(intDiff / (60 * 60 * 24));
+                    hour = Math.floor(intDiff / (60 * 60)) - (day * 24);
+                    minute = Math.floor(intDiff / 60) - (day * 24 * 60) - (hour * 60);
+                    second = Math.floor(intDiff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+                }
+                if (minute <= 9) minute = '0' + minute;
+                if (second <= 9) second = '0' + second;
+                $('#day_show').html(day + "天");
+                if (hour === 0) {
+                    $('#hour_show').html('<s id="h"></s>');
+                } else {
+                    $('#hour_show').html('<s id="h"></s>' + hour + ' 时');
+                }
+
+                $('#minute_show').html('<s></s>' + minute + ' 分');
+                $('#second_show').html('<s></s>' + second + ' 秒');
+                intDiff--;
+                if (intDiff === 0) {
+                    layer.msg('时间到，正在结束...', {icon: 1, time: 3000});
+                    setTimeout("javascript:location.reload();", 2000);
+                }
+                if (intDiff === 300) {
+                    layer.msg('距离结束还有 5 分钟！', {icon: 7, time: 3000});
+                }
+            }, 1000);
+        }
+
+        // 文件上传函数
+        function upload_file(file_id) {
+            var formData = new FormData();
+            formData.append("file1", document.getElementById(file_id).files[0]);
+            console.log(formData);
+            $.ajax({
+                url: "/uploader",
+                type: "POST",
+                data: formData,
+                /**
+                 *必须false才会自动加上正确的Content-Type
+                 */
+                contentType: false,
+                /**
+                 * 必须false才会避开jQuery对 formdata 的默认处理
+                 * XMLHttpRequest会对 formdata 进行正确的处理
+                 */
+                processData: false,
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function (data) {
+                    console.log(data)
+                    if (data.code != null) {
+                        layer.msg(data.msg);
+                    }
+                },
+                error: function (data) {
+                    console.log(data)
+                    layer.msg("上传失败！");
+                }
+            });
+        }
+    </script>
+
+{% endblock %}

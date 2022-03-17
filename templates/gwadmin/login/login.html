@@ -1,0 +1,107 @@
+{% extends "common/gwadmin/login_base.html" %}
+{% block body %}
+    <div class="login-page">
+        <div class="login-box">
+            <div class="login-logo">
+                <b>监考员登录</b>
+            </div>
+            <!-- /.login-logo -->
+            <div class="card">
+                <div class="card-body login-card-body">
+                    <p></p>
+{#                    <p class="login-box-msg">后台管理系统</p>#}
+
+                    {#                    <form action="/admin/login" method="post">#}
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="用户名" name="name" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" placeholder="密码" name="password" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="icheck-primary">
+                                <input type="checkbox" id="remember" name="is_remember">
+                                <label for="remember">
+                                    记住我
+                                </label>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-4">
+                            <button class="btn btn-primary btn-block" id="btn_login">登录</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    {#                        </form>#}
+                    {#                        <div class="social-auth-links text-center mb-3">#}
+                    {#                            <p>- OR -</p>#}
+                    {#                            <a href="#" class="btn btn-block btn-primary" id="my_lo">#}
+                    {#                                <i class="fa fa-wechat mr-2"></i> 微信登录#}
+                    {#                            </a>#}
+                    {#                            <a href="#" class="btn btn-block btn-danger">#}
+                    {#                                <i class="fab fa-qq mr-2"></i> QQ登录#}
+                    {#                            </a>#}
+                    {#                        </div>#}
+                    <!-- /.social-auth-links -->
+                    {#                        <p class="mb-1">#}
+                    {#                            <a href="/admin">忘记密码</a>#}
+                    {#                        </p>#}
+                </div>
+                <!-- /.login-card-body -->
+            </div>
+        </div>
+        <!-- /.login-box -->
+    </div>
+{% endblock %}
+{% block js %}
+    <script !src="">
+        $(function () {
+            // csrf
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            // 登录
+            $('#btn_login').click(function () {
+                var name = $("[name='name']").val();
+                var password = $("[name='password']").val();
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '/gw/login',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {name: name, password: password},
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                    },
+                    success: function (msg) {
+                        console.log(msg);
+                        if (msg.code === 200) {
+                            layer.msg('登录成功啦');
+                            window.location.href = "/gw";
+                        } else {
+                            layer.msg(msg.msg, {anim: 6});
+                        }
+                    },
+                    error: function (msg) {
+                        layer.msg("出问题啦！!");
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

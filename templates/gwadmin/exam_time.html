@@ -1,0 +1,159 @@
+{% extends 'common/gwadmin/base.html' %}
+{% load staticfiles %}
+{% block bread %}
+    <li class="breadcrumb-item active">考试时间</li>
+{% endblock %}
+{% block css %}
+    <!-- 时间选择 -->
+    <link href="{% static 'common/plugins/bootstrap/datetimepicker/css/bootstrap-datetimepicker.min.css' %}"
+          rel="stylesheet">
+
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-6">
+            <button type="button" class="btn btn-primary btn-sm" id="add_user">新增
+            </button>
+            <button type="button" class="btn btn-primary btn-sm">导入</button>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-default">导出
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" id="getCo">获取
+            </button>
+
+        </div>
+        <div class="col-6">
+            <div class="card-tools float-right">
+                <div class="input-group input-group-sm" style="width: 200px;">
+                    <input type="text" name="table_search" class="form-control float-right"
+                           placeholder="Search">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-default"><i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-primary card-outline">
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-4">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
+                        <tr class="text-center">
+                            <th>ID</th>
+                            <th>考试名称</th>
+                            <th>开始时间</th>
+                            <th>结束时间</th>
+
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in user_list %}
+                            <tr class="text-center">
+                                <td>{{ i.id }}</td>
+                                <td>{{ i.exam_name }}</td>
+                                <td>
+                                    <input type="text" class="form-control"
+                                           placeholder="{{ i.exam_begin_time }}" id="datetimepicker1"
+                                           data-date-format="yyyy-mm-dd hh:ii" value="{{ i.exam_begin_time }}">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control"
+                                           placeholder="{{ i.exam_end_time }}" id="datetimepicker2"
+                                           data-date-format="yyyy-mm-dd hh:ii" value="{{ i.exam_end_time }}">
+                                </td>
+
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-primary btn-sm" id="btn_save_time">
+                                            保存
+                                        </button>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            <div class="row">
+                <div class="col-6"></div>
+                <div class="col-6">
+                    <div class=" float-right">
+                        分页器
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'common/plugins/bootstrap/datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="{% static 'common/plugins/bootstrap/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js' %}"></script>
+    <script>
+        $('#datetimepicker1').datetimepicker({
+            //language:  'fr',
+            language: 'zh-CN', //format : 'yyyy-mm-dd hh:ii:ss',//日期格式。可以将日期格式，定成年月日时分秒。
+            format: 'yyyy-mm-dd hh:ii:00',//日期格式。可以将日期格式，定成年月日时，分秒为0。
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            forceParse: 0,
+            showMeridian: 1
+        });
+        $('#datetimepicker2').datetimepicker({
+            //language:  'fr',
+            language: 'zh-CN', //format : 'yyyy-mm-dd hh:ii:ss',//日期格式。可以将日期格式，定成年月日时分秒。
+            format: 'yyyy-mm-dd hh:ii:00',//日期格式。可以将日期格式，定成年月日时，分秒为0。
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            forceParse: 0,
+            showMeridian: 1
+        });
+
+
+        $('#btn_save_time').click(function () {
+            layer.confirm('是否保存？', {
+                shadeClose: true,
+                btn: ['确认', '取消'] //按钮
+            }, function () {
+                var begin_time = $("#datetimepicker1").val()
+                var end_time = $("#datetimepicker2").val()
+                console.log(begin_time)
+                console.log(end_time)
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '/gw/examtime',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {begin_time: begin_time, end_time: end_time},
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                    },
+                    success: function (e) {
+                        console.log(e);
+                        layer.msg(e.msg)
+                    },
+                    error: function (msg) {
+                        layer.msg("出问题啦！!");
+                    }
+                })
+            });
+        });
+    </script>
+{% endblock %}

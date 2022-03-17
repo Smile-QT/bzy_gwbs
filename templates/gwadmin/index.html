@@ -1,0 +1,54 @@
+{% extends 'common/gwadmin/base.html' %}
+{% load staticfiles %}
+{% block title %}首页{% endblock %}
+{% block css %}
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>巴中市 第三届 机关公文写作大赛</h1>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div id="main" style="width: 600px;height:400px;"></div>
+        </div>
+    </div>
+    <br>
+    <br>
+{% endblock %}
+
+{% block js %}
+
+    <script src="{% static 'common/plugins/echarts/echarts.min.js' %}"></script>
+    <script>
+        var option;
+        $.get('/gw/show', function (data) {
+            console.log(data);
+            option = {
+                xAxis: {
+                    type: 'category',
+                    data: ['总人数', '已交', '未交']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: [data.sum, data.num1, data.num2],
+                    type: 'bar',
+                    showBackground: true,
+                    backgroundStyle: {
+                        color: 'rgba(220, 220, 220, 0.8)'
+                    }
+                }]
+            };
+            echarts.init(document.getElementById('main')).setOption(option);
+        });
+
+
+
+
+    </script>
+
+{% endblock %}

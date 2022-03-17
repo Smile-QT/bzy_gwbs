@@ -1,0 +1,186 @@
+{% extends 'common/gwadmin/base.html' %}
+{% load staticfiles %}
+{% block bread %}
+    <li class="breadcrumb-item active">答题状态</li>{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-6">
+            <button type="button" class="btn btn-primary btn-sm" id="add_user">新增
+            </button>
+            <button type="button" class="btn btn-primary btn-sm">导入</button>
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-default">导出
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" id="getCo">获取
+            </button>
+        </div>
+        <div class="col-6">
+            <div class="card-tools float-right">
+                <div class="input-group input-group-sm" style="width: 200px;">
+                    <input type="text" name="table_search" class="form-control float-right"
+                           placeholder="Search">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-default"><i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-primary card-outline">
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-4">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
+                        <tr class="text-center">
+                            <th>ID</th>
+                            <th>考生姓名</th>
+                            <th>是否登录</th>
+                            <th>WORD上传情况</th>
+                            <th>PDF上传情况</th>
+                            <th>是否交卷</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for u in user_list %}
+                            <tr class="text-center">
+                                <td>{{ u.id }}</td>
+                                <td>{{ u.name }}</td>
+                                <td>
+                                    {% if u.useranswer.is_begin %}是
+                                    {% else %}否{% endif %}
+                                </td>
+                                <td>
+                                    {% if  u.useranswer.word_name %}{{ u.useranswer.word_name }}
+                                    {% else %}未提交{% endif %}
+                                </td>
+                                <td>
+                                    {% if  u.useranswer.pdf_name %}{{ u.useranswer.pdf_name }}
+                                    {% else %}未提交{% endif %}
+                                </td>
+                                <td>
+                                    {% if u.useranswer.is_over %}是
+                                    {% else %}否{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            <div class="row">
+                <div class="col-6"></div>
+                <div class="col-6">
+                    <div class=" float-right">
+                        分页器
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="modal fade" id="modal-default">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">新增用户</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- .modal -->
+                        <div class="row">
+                            <div class="col-12">
+                                <form class="form-horizontal">
+                                    <div class="card-body">
+                                        <div class="form-group row">
+                                            <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                                            <div class="col-sm-10">
+                                                <input type="email" class="form-control" id="inputEmail3"
+                                                       placeholder="Email">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+                                            <div class="col-sm-10">
+                                                <input type="password" class="form-control" id="inputPassword3"
+                                                       placeholder="Password">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="offset-sm-2 col-sm-10">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="exampleCheck2">
+                                                    <label class="form-check-label" for="exampleCheck2">Remember
+                                                        me</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-body -->
+                                </form>
+                            </div>
+                        </div>
+                        <!-- /.modal -->
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary">保存</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script !src="">
+        $('#add_user').click(function () {
+            layer.open({
+                type: 2,  //2为iframe层
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: 'users/create',  //url
+                // btn:['ok','cancel'],  //增加按钮
+                // closeBtn: 0, // 关闭按钮
+                // shade: 0,  //不显示遮罩层
+                shadeClose: true,  //点击遮罩关闭
+                id: '001',
+                scrollbar: false,
+                title: '哈哈哈',
+            });
+        });
+
+        $('#getCo').click(function () {
+            $.ajax({
+                cache: false,
+                async: true,
+                url: '/api/info',
+                type: 'get',
+                dataType: 'json',
+                data: {token: sessionStorage.getItem('token')},
+                success: function (msg) {
+                    console.log(msg.data);
+                    if (msg.code == '200') {
+                        layer.msg('个人信息获取成功');
+                        // window.location.reload();
+                    } else {
+                        layer.msg('出错啦!', {anim: 6});
+                    }
+                },
+                error: function (msg) {
+                    layer.msg("出问题啦！!");
+                }
+            })
+        });
+    </script>
+{% endblock %}

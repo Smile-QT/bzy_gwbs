@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="csrf-token" content="">
+    <title>{% block title %}首页{% endblock %} - 巴中市第三届机关公文写作大赛</title>
+    <!-- Font Awesome Icons -->
+    <link href="{% static 'common/plugins/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+    <link href="{% static 'common/plugins/fontawesome-free/css/font-awesome.min.css' %}" rel="stylesheet">
+    <!-- Theme style -->
+    <link href="{% static 'common/plugins/adminlte/css/adminlte.min.css' %}" rel="stylesheet">
+    <!-- 动画样式 -->
+    <link href="{% static 'common/plugins/animate/animate.min.css' %}" rel="stylesheet">
+
+    <!-- 图片浏览 -->
+    <link href="{% static 'common/plugins/fancybox/jquery.fancybox.min.css' %}" rel="stylesheet"/>
+    <!-- 时间线 -->
+    <link href="{% static 'front/css/timeline.css' %}" rel="stylesheet">
+    <!-- 自定义样式 -->
+    <link href="{% static 'common/css/cc.css' %}" rel="stylesheet">
+    {% block css %}{% endblock %}
+</head>
+
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+    {% include 'common/gwadmin/nav.html' %}
+    {% include 'common/gwadmin/sidebar.html' %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-left">
+                            <li class="breadcrumb-item"><a href="\gw">Home</a></li>
+                            {% block bread %}
+
+                            {% endblock %}
+                        </ol>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content-header -->
+        <!-- 内容 -->
+        <!-- Main content -->
+        <div class="content">
+            <div class="container-fluid">
+                {% block body %}
+
+                {% endblock %}
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    {% include 'common/gwadmin/control.html' %}
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <!-- To the right -->
+        <div class="float-right d-none d-sm-inline">
+            Anything you want
+        </div>
+        <!-- Default to the left -->
+        <strong>Copyright &copy; 2019-2020 <a href="http://blog.yfengl.cn">Spring</a>.</strong> All rights reserved.
+    </footer>
+</div>
+<!-- ./wrapper -->
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="{% static 'common/plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'common/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'common/plugins/adminlte/js/adminlte.min.js' %}"></script>
+<!-- 图片浏览 -->
+<script src="{% static 'common/plugins/fancybox/jquery.fancybox.min.js' %}"></script>
+<!-- 返回顶部 -->
+<script src="{% static 'common/plugins/goup/jquery.goup.min.js' %}"></script>
+<script src="{% static 'common/plugins/goup/wow.min.js' %}"></script>
+<!-- 弹出层 -->
+<script src="{% static 'common/plugins/layer/layer.js' %}"></script>
+<!-- 导航条效果 -->
+<script src="{% static 'common/plugins/headroom/headroom.min.js' %}"></script>
+<script src="{% static 'common/plugins/headroom/jQuery.headroom.js' %}"></script>
+<script src="{% static 'common/plugins/wangEditor-3.1.1/wangEditor.min.js' %}"></script>
+<!-- 自定义脚本 -->
+<script src="{% static 'common/js/cc.js' %}"></script>
+{% block js %}{% endblock %}
+</body>
+
+</html>

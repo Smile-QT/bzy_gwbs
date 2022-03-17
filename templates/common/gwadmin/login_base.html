@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{% block title %}首页{% endblock %} 后台管理</title>
+    <!-- Font Awesome Icons -->
+    <link href="{% static 'common/plugins/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+    <link href="{% static 'common/plugins/fontawesome-free/css/font-awesome.min.css' %}" rel="stylesheet">
+    <!-- Theme style -->
+    <link href="{% static 'common/plugins/adminlte/css/adminlte.min.css' %}" rel="stylesheet">
+    <!-- 动画样式 -->
+    <link href="{% static 'common/plugins/animate/animate.min.css' %}" rel="stylesheet">
+    <!-- 图片浏览 -->
+    <link href="{% static 'common/plugins/fancybox/jquery.fancybox.min.css' %}" rel="stylesheet"/>
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    <!-- Main content -->
+    <div class="content">
+        <div class="container-fluid">
+            <!--自定义内容开始-->
+            {% block body %}
+
+                {% endblock %}
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+</div>
+<!-- ./wrapper -->
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="{% static 'common/plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'common/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'common/plugins/adminlte/js/adminlte.min.js' %}"></script>
+<!-- 弹出层 -->
+<script src="{% static 'common/plugins/layer/layer.js' %}"></script>
+{% block js %}{% endblock %}
+</body>
+
+</html>
